@@ -1,0 +1,23 @@
+{
+  "name": "sinso-api-lite",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "dev:local": "wrangler dev --local --persist-to=.wrangler/state/v3",
+    "deploy": "wrangler deploy",
+    "db:migrate": "wrangler d1 execute sinso-api-db --file=./schema.sql",
+    "db:migrate:local": "wrangler d1 execute sinso-api-db --local --file=./schema.sql"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.44.6",
+    "hono": "^4.9.11",
+    "vite": "^7.1.9"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.2.3",
+    "drizzle-kit": "^0.31.5",
+    "tsx": "^4.20.6",
+    "vite-ssr-components": "^0.5.1",
+    "wrangler": "^4.42.2"
+  }
+}
