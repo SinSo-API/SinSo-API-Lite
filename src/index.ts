@@ -23,10 +23,11 @@ app.get('/health', (c) => {
 // Root
 app.get('/', (c) => {
   return c.json({
-    message: 'Welcome to SinSo API Lite !!!',
-    version: APP_VERSION,
+    Name: 'SinSo API Lite',
+    Description: 'Welcome to SinSo API Lite !!!',
+    Version: APP_VERSION,
     Author: APP_AUTHOR,
-    endpoints: {
+    Endpoints: {
       '/Songs' : {
         'All Songs': '/api/v1/songs'
       }
