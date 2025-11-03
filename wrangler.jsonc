@@ -1,17 +1,3 @@
-// {
-// 	"$schema": "node_modules/wrangler/config-schema.json",
-// 	"name": "sinso-api-lite",
-// 	"compatibility_date": "2025-08-03",
-// 	"main": "./src/index.tsx",
-// 	"d1_databases": [
-// 		{
-// 			"binding": "sinso_api_db",
-// 			"database_name": "sinso-api-db",
-// 			"database_id": "fc4dd8e5-6393-40c5-9e69-cb160378e506"
-// 		}
-// 	]
-// }
-
 {
     "$schema": "node_modules/wrangler/config-schema.json",
     "name": "sinso-api-lite",
