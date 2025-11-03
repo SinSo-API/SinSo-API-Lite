@@ -23,5 +23,11 @@
             "database_name": "sinso-api-db",
             "database_id": "fc4dd8e5-6393-40c5-9e69-cb160378e506"
         }
+    ],
+    "routes": [
+        {
+            "pattern": "api.sinso.vishalrashmika.com/*",
+            "zone_name": "vishalrashmika.com"
+        }
     ]
 }
