@@ -19,5 +19,7 @@
     "tsx": "^4.20.6",
     "vite-ssr-components": "^0.5.1",
     "wrangler": "^4.42.2"
-  }
+  },
+  "build": "wrangler deploy"
+
 }
