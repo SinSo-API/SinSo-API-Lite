@@ -12,7 +12,7 @@
     ],
     "routes": [
         {
-            "pattern": "sinso.vishalrashmika.com/api/*",
+            "pattern": "sinso.vishalrashmika.com/*",
             "zone_name": "vishalrashmika.com"
         }
     ]
