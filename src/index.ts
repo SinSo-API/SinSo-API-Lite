@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import songsRouter from './routes/songs';
+import artistsRouter from './routes/artists';
 import { Env } from './models/Song';
 import { APP_AUTHOR, APP_VERSION } from './metadata';
 
@@ -30,17 +31,22 @@ app.get('/', (c) => {
     Endpoints: {
       '/Songs' : {
         'All Songs': '/api/v1/songs'
+      },
+      '/Artists' : {
+        'All Artists': '/api/v1/artists'
       }
     },
     HealthChecks: {
         Root: '/health',
-        Songs: '/api/v1/songs/health'
+        Songs: '/api/v1/songs/health',
+        Artists: '/api/v1/artists/health'
       }
   });
 });
 
 // List of API Routers
 app.route('/api/v1/songs', songsRouter);
+app.route('/api/v1/artists', artistsRouter);
 
 // 404 handler
 app.notFound((c) => {
