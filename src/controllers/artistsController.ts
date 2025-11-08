@@ -1,7 +1,5 @@
 import {Context} from 'hono';
 import { Artist, ArtistResponse, Env } from '../models/Artist';
-import { timestamp } from 'drizzle-orm/gel-core';
-import { version } from 'vite';
 import { APP_VERSION } from '../metadata';
 
 export class ArtistsController {

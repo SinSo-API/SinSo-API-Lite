@@ -1,10 +1,12 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
+import { swaggerUI } from '@hono/swagger-ui';
 import songsRouter from './routes/songs';
 import artistsRouter from './routes/artists';
 import { Env } from './models/Song';
 import { APP_AUTHOR, APP_VERSION } from './metadata';
+import { generateOpenAPISpec } from '../doc/openapi.spec';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -40,7 +42,11 @@ app.get('/', (c) => {
         Root: '/health',
         Songs: '/api/v1/songs/health',
         Artists: '/api/v1/artists/health'
-      }
+    },
+    Documentation: {
+      'Swagger UI': '/docs',
+      'OpenAPI JSON': '/docs/openapi.json'
+    }
   });
 });
 
@@ -48,23 +54,42 @@ app.get('/', (c) => {
 app.route('/api/v1/songs', songsRouter);
 app.route('/api/v1/artists', artistsRouter);
 
+// OpenAPI Doc routes
+app.get('/docs/openapi.json', (c) => {
+  return c.json(generateOpenAPISpec());
+});
+app.get('/docs', swaggerUI({ url: '/docs/openapi.json' }));
+
+
 // 404 handler
 app.notFound((c) => {
-  return c.json({
-    success: false,
-    message: 'Route not found',
-    path: c.req.path
-  }, 404);
+  return c.json(
+    {
+      status: 404,
+      code: `${c.req.path} not found`,
+      message: 'URI is not defined',
+      details: `${c.req.path} URI does not exist`,
+      path: c.req.path,
+      timestamp: new Date().toISOString().slice(0, 19),
+    },
+    404
+  );
 });
 
 // Error handler
 app.onError((err, c) => {
-  console.error('Error:', err);
-  return c.json({
-    success: false,
-    message: 'Internal server error',
-    error: err.message
-  }, 500);
+  console.error(`${err}`);
+  return c.json(
+    {
+      status: 500,
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'An unexpected error occurred',
+      details: err.message,
+      path: c.req.path,
+      timestamp: new Date().toISOString().slice(0, 19),
+    },
+    500
+  );
 });
 
 export default app;
