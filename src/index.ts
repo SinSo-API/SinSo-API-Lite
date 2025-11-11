@@ -33,16 +33,21 @@ app.get('/', (c) => {
     Author: APP_AUTHOR,
     Endpoints: {
       '/Songs' : {
-        'All Songs': '/api/v1/songs'
+        'All Songs': '/api/v1/songs',
+        'Search Song By ID': '/api/v1/songs/{song_id}'
       },
       '/Artists' : {
         'All Artists': '/api/v1/artists'
+      },
+      '/Lyrics' : {
+        'Search Lyrics By ID': '/api/v1/lyrics/{lyric_id}'
       }
     },
     HealthChecks: {
         Root: '/health',
         Songs: '/api/v1/songs/health',
-        Artists: '/api/v1/artists/health'
+        Artists: '/api/v1/artists/health',
+        Lyrics: '/api/v1/lyrics/health',
     },
     Documentation: {
       'Swagger UI': '/docs',
