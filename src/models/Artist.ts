@@ -1,3 +1,4 @@
+import {Song} from './Song';
 export interface Artist {
   ID: number;
   ArtistID: string;
@@ -17,6 +18,28 @@ export interface ArtistResponse {
     totalPages: number;
   };
 }
+
+export interface artistFullInfo {
+  ID: number;
+  ArtistID: string;
+  ArtistName: string;
+  ArtistNameSinhala?: string;
+  Songs: Song | Song[];
+}
+
+// DTO for full artist info
+export interface fullArtistInfoResponse{
+  success: boolean;
+  data?: Artist;
+  message?: string;
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
 
 export interface Env {
   sinso_api_db: D1Database;

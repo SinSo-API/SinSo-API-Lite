@@ -242,6 +242,60 @@ export const generateOpenAPISpec = () => {
           }
         }
       },
+      '/api/v1/artists/{id}': {
+        get: {
+          tags: ['Artists'],
+          summary: 'Get artist by ID',
+          description: 'Get full artist information including all their songs',
+          parameters: [
+            {
+              name: 'id',
+              in: 'path',
+              description: 'Artist ID (example: ART-00001)',
+              required: true,
+              schema: { type: 'string' }
+            }
+          ],
+          responses: {
+            '200': {
+              description: 'Artist retrieved successfully',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      success: { type: 'boolean', example: true },
+                      data: { $ref: '#/components/schemas/FullArtist' }
+                    }
+                  }
+                }
+              }
+            },
+            '404': {
+              description: 'Artist not found',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      success: { type: 'boolean', example: false },
+                      message: { type: 'string', example: 'Artist not found' }
+                    }
+                  }
+                }
+              }
+            },
+            '500': {
+              description: 'Internal server error',
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/ErrorResponse' }
+                }
+              }
+            }
+          }
+        }
+      },
       '/api/v1/artists/health': {
         get: {
           tags: ['Artists'],
@@ -374,6 +428,26 @@ export const generateOpenAPISpec = () => {
             ArtistID: { type: 'string', example: 'ART-00001' },
             ArtistName: { type: 'string', example: 'John Doe' },
             ArtistNameSinhala: { type: 'string', example: 'ජෝන් ඩෝ' }
+          }
+        },
+        FullArtist: {
+          type: 'object',
+          properties: {
+            ArtistID: { type: 'string', example: 'ART-00001' },
+            ArtistName: { type: 'string', example: 'John Doe' },
+            ArtistNameSinhala: { type: 'string', example: 'ජොන් ඩෝ' },
+            Songs: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  SongID: { type: 'string', example: 'SNG-00001' },
+                  SongName: { type: 'string', example: 'Beautiful Song' },
+                  SongNameSinhala: { type: 'string', example: 'ලස්සන ගීතය' },
+                  ViewCount: { type: 'number', example: 1000 }
+                }
+              }
+            }
           }
         },
         Lyric: {
