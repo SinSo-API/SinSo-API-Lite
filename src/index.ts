@@ -37,7 +37,8 @@ app.get('/', (c) => {
         'Search Song By ID': '/api/v1/songs/{song_id}'
       },
       '/Artists' : {
-        'All Artists': '/api/v1/artists'
+        'All Artists': '/api/v1/artists',
+        'Search Artist By ID': '/api/v1/songs/{artist_id}'
       },
       '/Lyrics' : {
         'Search Lyrics By ID': '/api/v1/lyrics/{lyric_id}'
