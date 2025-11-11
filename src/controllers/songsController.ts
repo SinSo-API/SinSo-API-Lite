@@ -2,7 +2,9 @@ import { Context } from 'hono';
 import { 
   Song,
   SongResponse,
-  Env
+  Env,
+  fullSongResponse,
+  fullSong
 } from '../models/Song';
 import { APP_VERSION } from '../metadata';
 
@@ -82,6 +84,56 @@ export class SongsController {
       return c.json({
         success: false,
         message: 'Error fetching songs',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      }, 500);
+    }
+  }
+
+  // search song by ID
+  static async getSongByID(c: Context<{Bindings: Env}>){
+    try {
+      const songId = c.req.param('id');
+
+      const song = await c.env.sinso_api_db.prepare(
+      `SELECT 
+          s.ID,
+          s.SongID,
+          s.SongName,
+          s.SongNameSinhala,
+          s.ArtistID,
+          s.Duration,
+          s.ReleaseYear,
+          s.Composer,
+          s.Lyricist,
+          s.ViewCount,
+          l.LyricContent AS LyricsContent,
+          l.LyricContentSinhala AS LyricsContentSinhala
+      FROM Songs s
+      LEFT JOIN Lyrics l ON l.SongID = s.SongID
+      WHERE s.SongID = ?`
+      ).bind(songId).first<fullSong>();
+
+      if (!song) {
+        return c.json({
+          success: false,
+          message: 'Song not found'
+        }, 404);
+      }
+
+      const response: fullSongResponse = {
+        success: true,
+        data: song
+      };
+
+      await c.env.sinso_api_db.prepare(
+        `UPDATE Songs SET ViewCount = ViewCount + 1 WHERE SongID = ?`
+      ).bind(songId).run();
+
+      return c.json(response, 200);
+    } catch (error) {
+      return c.json({
+        success: false,
+        message: 'Error fetching song',
         error: error instanceof Error ? error.message : 'Unknown error'
       }, 500);
     }
