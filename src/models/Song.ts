@@ -17,6 +17,8 @@ export interface fullSong{
   SongName: string;
   SongNameSinhala?: string;
   ArtistID: string;
+  ArtistName: string;
+  ArtistNameSinhala?: String;
   Duration?: number;
   ReleaseYear?: number;
   Composer?: string;

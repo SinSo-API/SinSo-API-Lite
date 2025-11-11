@@ -356,6 +356,8 @@ export const generateOpenAPISpec = () => {
             SongName: { type: 'string', example: 'Beautiful Song' },
             SongNameSinhala: { type: 'string', example: 'ලස්සන ගීතය' },
             ArtistID: { type: 'string', example: 'ART-00001' },
+            ArtistName: { type: 'string', example: 'John Doe' },
+            ArtistNameSinhala: { type: 'string', example: 'ජෝන් ඩෝ' },
             Duration: { type: 'number', example: 240 },
             ReleaseYear: { type: 'number', example: 2024 },
             Composer: { type: 'string', example: 'John Doe' },

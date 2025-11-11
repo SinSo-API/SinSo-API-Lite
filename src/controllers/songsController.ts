@@ -101,15 +101,18 @@ export class SongsController {
           s.SongName,
           s.SongNameSinhala,
           s.ArtistID,
+          a.ArtistName,
+          a.ArtistNameSinhala,
           s.Duration,
           s.ReleaseYear,
           s.Composer,
           s.Lyricist,
-          s.ViewCount,
           l.LyricContent AS LyricsContent,
-          l.LyricContentSinhala AS LyricsContentSinhala
+          l.LyricContentSinhala AS LyricsContentSinhala,
+          s.ViewCount
       FROM Songs s
       LEFT JOIN Lyrics l ON l.SongID = s.SongID
+      LEFT JOIN Artists a ON a.ArtistID = s.ArtistID
       WHERE s.SongID = ?`
       ).bind(songId).first<fullSong>();
 
