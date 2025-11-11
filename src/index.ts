@@ -4,6 +4,7 @@ import { logger } from 'hono/logger';
 import { swaggerUI } from '@hono/swagger-ui';
 import songsRouter from './routes/songs';
 import artistsRouter from './routes/artists';
+import lyricsRouter from './routes/lyrics';
 import { Env } from './models/Song';
 import { APP_AUTHOR, APP_VERSION } from './metadata';
 import { generateOpenAPISpec } from '../doc/openapi.spec';
@@ -32,16 +33,21 @@ app.get('/', (c) => {
     Author: APP_AUTHOR,
     Endpoints: {
       '/Songs' : {
-        'All Songs': '/api/v1/songs'
+        'All Songs': '/api/v1/songs',
+        'Search Song By ID': '/api/v1/songs/{song_id}'
       },
       '/Artists' : {
         'All Artists': '/api/v1/artists'
+      },
+      '/Lyrics' : {
+        'Search Lyrics By ID': '/api/v1/lyrics/{lyric_id}'
       }
     },
     HealthChecks: {
         Root: '/health',
         Songs: '/api/v1/songs/health',
-        Artists: '/api/v1/artists/health'
+        Artists: '/api/v1/artists/health',
+        Lyrics: '/api/v1/lyrics/health',
     },
     Documentation: {
       'Swagger UI': '/docs',
@@ -53,6 +59,7 @@ app.get('/', (c) => {
 // List of API Routers
 app.route('/api/v1/songs', songsRouter);
 app.route('/api/v1/artists', artistsRouter);
+app.route('/api/v1/lyrics', lyricsRouter);
 
 // OpenAPI Doc routes
 app.get('/docs/openapi.json', (c) => {

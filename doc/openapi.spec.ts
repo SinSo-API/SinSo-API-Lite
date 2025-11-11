@@ -50,14 +50,14 @@ export const generateOpenAPISpec = () => {
               in: 'query',
               description: 'Sort field (example: ViewCount)',
               required: false,
-              schema: { type: 'string' }
+              schema: { type: 'string', default: 'ViewCount' }
             },
             {
               name: 'sortOrder',
               in: 'query',
-              description: 'Sort order (example: asc/desc)',
+              description: 'Sort order (asc/desc)',
               required: false,
-              schema: { type: 'string' }
+              schema: { type: 'string', enum: ['asc', 'desc'], default: 'desc' }
             }
           ],
           responses: {
@@ -71,7 +71,7 @@ export const generateOpenAPISpec = () => {
                       success: { type: 'boolean', example: true },
                       data: {
                         type: 'array',
-                        items: { type: 'object' }
+                        items: { $ref: '#/components/schemas/Song' }
                       },
                       pagination: {
                         type: 'object',
@@ -98,6 +98,60 @@ export const generateOpenAPISpec = () => {
           }
         }
       },
+      '/api/v1/songs/{id}': {
+        get: {
+          tags: ['Songs'],
+          summary: 'Get song by ID',
+          description: 'Get the details of a specific song including lyrics using the SongID. Increments the ViewCount.',
+          parameters: [
+            {
+              name: 'id',
+              in: 'path',
+              description: 'Song ID (example: SNG-0000025)',
+              required: true,
+              schema: { type: 'string' }
+            }
+          ],
+          responses: {
+            '200': {
+              description: 'Song retrieved successfully',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      success: { type: 'boolean', example: true },
+                      data: { $ref: '#/components/schemas/FullSong' }
+                    }
+                  }
+                }
+              }
+            },
+            '404': {
+              description: 'Song not found',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      success: { type: 'boolean', example: false },
+                      message: { type: 'string', example: 'Song not found' }
+                    }
+                  }
+                }
+              }
+            },
+            '500': {
+              description: 'Internal server error',
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/ErrorResponse' }
+                }
+              }
+            }
+          }
+        }
+      },
       '/api/v1/songs/health': {
         get: {
           tags: ['Songs'],
@@ -108,15 +162,168 @@ export const generateOpenAPISpec = () => {
               description: 'Service is healthy',
               content: {
                 'application/json': {
+                  schema: { $ref: '#/components/schemas/HealthCheck' }
+                }
+              }
+            }
+          }
+        }
+      },
+      '/api/v1/artists': {
+        get: {
+          tags: ['Artists'],
+          summary: 'Get all artists',
+          description: 'Get a paginated list of all artists with optional filters',
+          parameters: [
+            {
+              name: 'page',
+              in: 'query',
+              description: 'Page number',
+              required: false,
+              schema: { type: 'string', example: '1' }
+            },
+            {
+              name: 'limit',
+              in: 'query',
+              description: 'Items per page',
+              required: false,
+              schema: { type: 'string', example: '10' }
+            },
+            {
+              name: 'artistId',
+              in: 'query',
+              description: 'Filter by artist ID (example: ART-00001)',
+              required: false,
+              schema: { type: 'string' }
+            },
+            {
+              name: 'search',
+              in: 'query',
+              description: 'Search in artist names (English or Sinhala)',
+              required: false,
+              schema: { type: 'string' }
+            }
+          ],
+          responses: {
+            '200': {
+              description: 'Artists retrieved successfully',
+              content: {
+                'application/json': {
                   schema: {
                     type: 'object',
                     properties: {
-                      status: { type: 'string', example: 'OK' },
-                      timestamp: { type: 'string', example: '2025-11-08T10:30:00.000Z' },
-                      environment: { type: 'string', example: 'Production' },
-                      version: { type: 'string', example: '1.0.0' }
+                      success: { type: 'boolean', example: true },
+                      data: {
+                        type: 'array',
+                        items: { $ref: '#/components/schemas/Artist' }
+                      },
+                      pagination: {
+                        type: 'object',
+                        properties: {
+                          page: { type: 'number', example: 1 },
+                          limit: { type: 'number', example: 10 },
+                          total: { type: 'number', example: 50 },
+                          totalPages: { type: 'number', example: 5 }
+                        }
+                      }
                     }
                   }
+                }
+              }
+            },
+            '500': {
+              description: 'Internal server error',
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/ErrorResponse' }
+                }
+              }
+            }
+          }
+        }
+      },
+      '/api/v1/artists/health': {
+        get: {
+          tags: ['Artists'],
+          summary: 'Check artists service health',
+          description: 'Health check endpoint for the artists service',
+          responses: {
+            '200': {
+              description: 'Service is healthy',
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/HealthCheck' }
+                }
+              }
+            }
+          }
+        }
+      },
+      '/api/v1/lyrics/{id}': {
+        get: {
+          tags: ['Lyrics'],
+          summary: 'Get lyrics by ID',
+          description: 'Get the lyrics for a specific song using the LyricID',
+          parameters: [
+            {
+              name: 'id',
+              in: 'path',
+              description: 'Lyric ID (example: LYR-0000025)',
+              required: true,
+              schema: { type: 'string' }
+            }
+          ],
+          responses: {
+            '200': {
+              description: 'Lyrics retrieved successfully',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      success: { type: 'boolean', example: true },
+                      data: { $ref: '#/components/schemas/Lyric' }
+                    }
+                  }
+                }
+              }
+            },
+            '404': {
+              description: 'Lyrics not found',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      success: { type: 'boolean', example: false },
+                      message: { type: 'string', example: 'Lyrics not found' }
+                    }
+                  }
+                }
+              }
+            },
+            '500': {
+              description: 'Internal server error',
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/ErrorResponse' }
+                }
+              }
+            }
+          }
+        }
+      },
+      '/api/v1/lyrics/health': {
+        get: {
+          tags: ['Lyrics'],
+          summary: 'Check lyrics service health',
+          description: 'Health check endpoint for the lyrics service',
+          responses: {
+            '200': {
+              description: 'Service is healthy',
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/HealthCheck' }
                 }
               }
             }
@@ -126,15 +333,72 @@ export const generateOpenAPISpec = () => {
     },
     components: {
       schemas: {
+        Song: {
+          type: 'object',
+          properties: {
+            ID: { type: 'number', example: 1 },
+            SongID: { type: 'string', example: 'SNG-00001' },
+            SongName: { type: 'string', example: 'Beautiful Song' },
+            SongNameSinhala: { type: 'string', example: 'ලස්සන ගීතය' },
+            ArtistID: { type: 'string', example: 'ART-00001' },
+            Duration: { type: 'number', example: 240 },
+            ReleaseYear: { type: 'number', example: 2024 },
+            Composer: { type: 'string', example: 'John Doe' },
+            Lyricist: { type: 'string', example: 'Jane Smith' },
+            ViewCount: { type: 'number', example: 1000 }
+          }
+        },
+        FullSong: {
+          type: 'object',
+          properties: {
+            ID: { type: 'number', example: 1 },
+            SongID: { type: 'string', example: 'SNG-00001' },
+            SongName: { type: 'string', example: 'Beautiful Song' },
+            SongNameSinhala: { type: 'string', example: 'ලස්සන ගීතය' },
+            ArtistID: { type: 'string', example: 'ART-00001' },
+            Duration: { type: 'number', example: 240 },
+            ReleaseYear: { type: 'number', example: 2024 },
+            Composer: { type: 'string', example: 'John Doe' },
+            Lyricist: { type: 'string', example: 'Jane Smith' },
+            LyricsContent: { type: 'string', example: 'Full lyrics in English...' },
+            LyricsContentSinhala: { type: 'string', example: 'සම්පූර්ණ ගී පද...' },
+            ViewCount: { type: 'number', example: 1000 }
+          }
+        },
+        Artist: {
+          type: 'object',
+          properties: {
+            ID: { type: 'number', example: 1 },
+            ArtistID: { type: 'string', example: 'ART-00001' },
+            ArtistName: { type: 'string', example: 'John Doe' },
+            ArtistNameSinhala: { type: 'string', example: 'ජෝන් ඩෝ' }
+          }
+        },
+        Lyric: {
+          type: 'object',
+          properties: {
+            ID: { type: 'number', example: 1 },
+            LyricID: { type: 'string', example: 'LYR-00001' },
+            SongID: { type: 'string', example: 'SNG-00001' },
+            LyricContent: { type: 'string', example: 'Full lyrics in English...' },
+            LyricContentSinhala: { type: 'string', example: 'සම්පූර්ණ ගී පද...' }
+          }
+        },
+        HealthCheck: {
+          type: 'object',
+          properties: {
+            status: { type: 'string', example: 'OK' },
+            timestamp: { type: 'string', example: '2025-11-08T10:30:00.000Z' },
+            environment: { type: 'string', example: 'Production' },
+            version: { type: 'string', example: '1.0.0' }
+          }
+        },
         ErrorResponse: {
           type: 'object',
           properties: {
-            status: { type: 'number', example: 404 },
-            code: { type: 'string', example: 'SONG_NOT_FOUND' },
-            message: { type: 'string', example: 'Song not found' },
-            details: { type: 'string', example: 'Song with ID SNG-9999999 does not exist' },
-            path: { type: 'string', example: '/api/v1/songs/SNG-9999999' },
-            timestamp: { type: 'string', example: '2025-11-08T10:30:00' }
+            success: { type: 'boolean', example: false },
+            message: { type: 'string', example: 'Error message' },
+            error: { type: 'string', example: 'Detailed error information' }
           }
         }
       }
