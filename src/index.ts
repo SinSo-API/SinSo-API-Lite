@@ -4,6 +4,7 @@ import { logger } from 'hono/logger';
 import { swaggerUI } from '@hono/swagger-ui';
 import songsRouter from './routes/songs';
 import artistsRouter from './routes/artists';
+import lyricsRouter from './routes/lyrics';
 import { Env } from './models/Song';
 import { APP_AUTHOR, APP_VERSION } from './metadata';
 import { generateOpenAPISpec } from '../doc/openapi.spec';
@@ -53,6 +54,7 @@ app.get('/', (c) => {
 // List of API Routers
 app.route('/api/v1/songs', songsRouter);
 app.route('/api/v1/artists', artistsRouter);
+app.route('/api/v1/lyrics', lyricsRouter);
 
 // OpenAPI Doc routes
 app.get('/docs/openapi.json', (c) => {
