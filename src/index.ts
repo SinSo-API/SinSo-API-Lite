@@ -5,6 +5,7 @@ import { swaggerUI } from '@hono/swagger-ui';
 import songsRouter from './routes/songs';
 import artistsRouter from './routes/artists';
 import lyricsRouter from './routes/lyrics';
+import searchRouter from './routes/search';
 import { Env } from './models/Song';
 import { APP_AUTHOR, APP_VERSION } from './metadata';
 import { generateOpenAPISpec } from '../doc/openapi.spec';
@@ -42,6 +43,9 @@ app.get('/', (c) => {
       },
       '/Lyrics' : {
         'Search Lyrics By ID': '/api/v1/lyrics/{lyric_id}'
+      },
+      '/Search' : {
+        'Search': '/api/v1/search'
       }
     },
     HealthChecks: {
@@ -49,6 +53,7 @@ app.get('/', (c) => {
         Songs: '/api/v1/songs/health',
         Artists: '/api/v1/artists/health',
         Lyrics: '/api/v1/lyrics/health',
+        Search: '/api/v1/search/health',
     },
     Documentation: {
       'Swagger UI': '/docs',
@@ -61,6 +66,7 @@ app.get('/', (c) => {
 app.route('/api/v1/songs', songsRouter);
 app.route('/api/v1/artists', artistsRouter);
 app.route('/api/v1/lyrics', lyricsRouter);
+app.route('/api/v1/search', searchRouter);
 
 // OpenAPI Doc routes
 app.get('/docs/openapi.json', (c) => {

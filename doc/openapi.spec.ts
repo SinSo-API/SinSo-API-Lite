@@ -383,6 +383,138 @@ export const generateOpenAPISpec = () => {
             }
           }
         }
+      },
+      '/api/v1/search': {
+        get: {
+          tags: ['Search'],
+          summary: 'Search songs',
+          description: 'Search for songs across title, artist name, and lyrics content. Supports Sinhala and English text.',
+          parameters: [
+            {
+              name: 'all',
+              in: 'query',
+              description: 'Search across song title, artist name, and lyrics (Sinhala or English)',
+              required: false,
+              schema: { type: 'string' }
+            },
+            {
+              name: 'artist',
+              in: 'query',
+              description: 'Search by artist name (Sinhala or English)',
+              required: false,
+              schema: { type: 'string' }
+            },
+            {
+              name: 'title',
+              in: 'query',
+              description: 'Search by song title (Sinhala or English)',
+              required: false,
+              schema: { type: 'string' }
+            },
+            {
+              name: 'lyrics',
+              in: 'query',
+              description: 'Search by lyrics content (Sinhala or English)',
+              required: false,
+              schema: { type: 'string' }
+            },
+            {
+              name: 'page',
+              in: 'query',
+              description: 'Page number',
+              required: false,
+              schema: { type: 'string', example: '1', default: '1' }
+            },
+            {
+              name: 'limit',
+              in: 'query',
+              description: 'Items per page (max: 100)',
+              required: false,
+              schema: { type: 'string', example: '10', default: '10' }
+            },
+            {
+              name: 'sortBy',
+              in: 'query',
+              description: 'Sort field',
+              required: false,
+              schema: { type: 'string', default: 'ViewCount' }
+            },
+            {
+              name: 'sortOrder',
+              in: 'query',
+              description: 'Sort order (asc/desc)',
+              required: false,
+              schema: { type: 'string', enum: ['asc', 'desc'], default: 'desc' }
+            }
+          ],
+          responses: {
+            '200': {
+              description: 'Search results retrieved successfully',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      success: { type: 'boolean', example: true },
+                      data: {
+                        type: 'array',
+                        items: { $ref: '#/components/schemas/SearchResult' }
+                      },
+                      pagination: {
+                        type: 'object',
+                        properties: {
+                          page: { type: 'number', example: 1 },
+                          limit: { type: 'number', example: 10 },
+                          total: { type: 'number', example: 50 },
+                          totalPages: { type: 'number', example: 5 }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            '400': {
+              description: 'No search parameters provided',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      success: { type: 'boolean', example: false },
+                      message: { type: 'string', example: 'No search parameters provided.' }
+                    }
+                  }
+                }
+              }
+            },
+            '500': {
+              description: 'Internal server error',
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/ErrorResponse' }
+                }
+              }
+            }
+          }
+        }
+      },
+      '/api/v1/search/health': {
+        get: {
+          tags: ['Search'],
+          summary: 'Check search service health',
+          description: 'Health check endpoint for the search service',
+          responses: {
+            '200': {
+              description: 'Service is healthy',
+              content: {
+                'application/json': {
+                  schema: { $ref: '#/components/schemas/HealthCheck' }
+                }
+              }
+            }
+          }
+        }
       }
     },
     components: {
@@ -435,7 +567,7 @@ export const generateOpenAPISpec = () => {
           properties: {
             ArtistID: { type: 'string', example: 'ART-00001' },
             ArtistName: { type: 'string', example: 'John Doe' },
-            ArtistNameSinhala: { type: 'string', example: 'ජොන් ඩෝ' },
+            ArtistNameSinhala: { type: 'string', example: 'ජෝන් ඩෝ' },
             Songs: {
               type: 'array',
               items: {
@@ -459,6 +591,82 @@ export const generateOpenAPISpec = () => {
             LyricContent: { type: 'string', example: 'Full lyrics in English...' },
             LyricContentSinhala: { type: 'string', example: 'සම්පූර්ණ ගී පද...' }
           }
+        },
+        SearchResult: {
+          type: 'object',
+          properties: {
+            SongID: { 
+              type: 'string', 
+              example: 'SNG-00001',
+              description: 'Unique identifier for the song'
+            },
+            SongName: { 
+              type: 'string', 
+              example: 'Beautiful Song',
+              description: 'Song title in English'
+            },
+            SongNameSinhala: { 
+              type: 'string', 
+              example: 'ලස්සන ගීතය',
+              description: 'Song title in Sinhala'
+            },
+            Duration: { 
+              type: 'number', 
+              example: 240,
+              description: 'Song duration in seconds'
+            },
+            ReleaseYear: { 
+              type: 'number', 
+              example: 2024,
+              description: 'Year the song was released'
+            },
+            Composer: { 
+              type: 'string', 
+              example: 'John Doe',
+              description: 'Name of the music composer'
+            },
+            Lyricist: { 
+              type: 'string', 
+              example: 'Jane Smith',
+              description: 'Name of the lyricist'
+            },
+            ViewCount: { 
+              type: 'number', 
+              example: 1000,
+              description: 'Number of times the song has been viewed'
+            },
+            ArtistID: { 
+              type: 'string', 
+              example: 'ART-00001',
+              description: 'Unique identifier for the artist'
+            },
+            ArtistName: { 
+              type: 'string', 
+              example: 'John Doe',
+              description: 'Artist name in English'
+            },
+            ArtistNameSinhala: { 
+              type: 'string', 
+              example: 'ජෝන් ඩෝ',
+              description: 'Artist name in Sinhala'
+            },
+            LyricID: { 
+              type: 'string', 
+              example: 'LYR-00001',
+              description: 'Unique identifier for the lyrics'
+            },
+            LyricContent: { 
+              type: 'string', 
+              example: 'Full lyrics in English...',
+              description: 'Complete lyrics content in English'
+            },
+            LyricContentSinhala: { 
+              type: 'string', 
+              example: 'සම්පූර්ණ ගී පද...',
+              description: 'Complete lyrics content in Sinhala'
+            }
+          },
+          description: 'Search result combining song, artist, and lyrics information'
         },
         HealthCheck: {
           type: 'object',
