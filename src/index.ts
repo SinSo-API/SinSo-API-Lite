@@ -6,14 +6,18 @@ import songsRouter from './routes/songs';
 import artistsRouter from './routes/artists';
 import lyricsRouter from './routes/lyrics';
 import searchRouter from './routes/search';
+import suggestionsRouter from './routes/suggestions';
+import adminRouter from './routes/admin';
 import { Env } from './models/Song';
 import { APP_AUTHOR, APP_VERSION } from './metadata';
 import { generateOpenAPISpec } from '../doc/openapi.spec';
+import { dashboardHTML } from './views/dashboard';
 
 const app = new Hono<{ Bindings: Env }>();
 
 app.use('*', cors());
 app.use('*', logger());
+// Remove this line: app.use('/*', serveStatic({ root: './public' }));
 
 // Endpoint to check the current health of the API.
 app.get('/health', (c) => {
@@ -33,31 +37,44 @@ app.get('/', (c) => {
     Version: APP_VERSION,
     Author: APP_AUTHOR,
     Endpoints: {
-      '/Songs' : {
+      '/Songs': {
         'All Songs': '/api/v1/songs',
         'Search Song By ID': '/api/v1/songs/{song_id}'
       },
-      '/Artists' : {
+      '/Artists': {
         'All Artists': '/api/v1/artists',
-        'Search Artist By ID': '/api/v1/songs/{artist_id}'
+        'Search Artist By ID': '/api/v1/artists/{artist_id}'
       },
-      '/Lyrics' : {
+      '/Lyrics': {
         'Search Lyrics By ID': '/api/v1/lyrics/{lyric_id}'
       },
-      '/Search' : {
+      '/Search': {
         'Search': '/api/v1/search'
+      },
+      '/Suggestions': {
+        'Submit Song Suggestion': 'POST /api/v1/suggestions',
+        'Check Suggestion Status': '/api/v1/suggestions/{id}/status'
+      },
+      '/Admin': {
+        'Get Pending Suggestions': '/api/v1/admin/suggestions',
+        'Approve Suggestion': 'POST /api/v1/admin/suggestions/{id}/approve',
+        'Reject Suggestion': 'POST /api/v1/admin/suggestions/{id}/reject',
+        'Get Stats': '/api/v1/admin/stats'
       }
     },
     HealthChecks: {
-        Root: '/health',
-        Songs: '/api/v1/songs/health',
-        Artists: '/api/v1/artists/health',
-        Lyrics: '/api/v1/lyrics/health',
-        Search: '/api/v1/search/health',
+      Root: '/health',
+      Songs: '/api/v1/songs/health',
+      Artists: '/api/v1/artists/health',
+      Lyrics: '/api/v1/lyrics/health',
+      Search: '/api/v1/search/health',
+      Suggestions: '/api/v1/suggestions/health',
+      Admin: '/api/v1/admin/health'
     },
     Documentation: {
       'Swagger UI': '/docs',
-      'OpenAPI JSON': '/docs/openapi.json'
+      'OpenAPI JSON': '/docs/openapi.json',
+      'Dashboard': '/dashboard.html'  // Add this
     }
   });
 });
@@ -67,13 +84,27 @@ app.route('/api/v1/songs', songsRouter);
 app.route('/api/v1/artists', artistsRouter);
 app.route('/api/v1/lyrics', lyricsRouter);
 app.route('/api/v1/search', searchRouter);
+app.route('/api/v1/suggestions', suggestionsRouter);
+app.route('/api/v1/admin', adminRouter);
 
 // OpenAPI Doc routes
 app.get('/docs/openapi.json', (c) => {
   return c.json(generateOpenAPISpec());
 });
+
 app.get('/docs', swaggerUI({ url: '/docs/openapi.json' }));
 
+app.get('/dashboard.html', (c) => {
+  return c.html(dashboardHTML);
+});
+
+app.get('/dashboard', (c) => {
+  return c.redirect('/dashboard.html');
+});
+
+app.get('/api/v1/dashboard', (c) => {
+  return c.redirect('/dashboard.html');
+});
 
 // 404 handler
 app.notFound((c) => {
