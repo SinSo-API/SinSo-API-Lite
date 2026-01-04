@@ -13,14 +13,11 @@
     "@hono/zod-openapi": "^0.8.5",
     "drizzle-orm": "^0.44.6",
     "hono": "^4.10.4",
-    "vite": "^7.1.9",
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.2.3",
     "drizzle-kit": "^0.31.5",
     "tsx": "^4.20.6",
-    "vite-ssr-components": "^0.5.1",
     "wrangler": "^4.42.2"
   },
   "build": "wrangler deploy"
