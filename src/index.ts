@@ -11,7 +11,6 @@ import adminRouter from './routes/admin';
 import { Env } from './models/Song';
 import { APP_AUTHOR, APP_VERSION } from './metadata';
 import { generateOpenAPISpec } from '../doc/openapi.spec';
-import { dashboardHTML } from './views/dashboard';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -73,8 +72,7 @@ app.get('/', (c) => {
     },
     Documentation: {
       'Swagger UI': '/docs',
-      'OpenAPI JSON': '/docs/openapi.json',
-      'Dashboard': '/dashboard.html'  // Add this
+      'OpenAPI JSON': '/docs/openapi.json'
     }
   });
 });
@@ -93,18 +91,6 @@ app.get('/docs/openapi.json', (c) => {
 });
 
 app.get('/docs', swaggerUI({ url: '/docs/openapi.json' }));
-
-app.get('/dashboard.html', (c) => {
-  return c.html(dashboardHTML);
-});
-
-app.get('/dashboard', (c) => {
-  return c.redirect('/dashboard.html');
-});
-
-app.get('/api/v1/dashboard', (c) => {
-  return c.redirect('/dashboard.html');
-});
 
 // 404 handler
 app.notFound((c) => {
