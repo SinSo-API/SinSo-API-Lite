@@ -4,18 +4,31 @@ export class SuggestionsService {
   constructor(private db: D1Database) {}
 
   async createSuggestion(input: SuggestionCreateInput): Promise<{ id: number; suggestion: Suggestion }> {
+    console.log('Creating suggestion with input:', JSON.stringify(input, null, 2));
+    console.log('Sinhala fields:', {
+      title_sinhala: input.title_sinhala,
+      artist_sinhala: input.artist_sinhala,
+      lyrics_sinhala: input.lyrics_sinhala
+    });
+    
     const result = await this.db
       .prepare(
         `INSERT INTO pending_suggestions 
-         (title, artist, album, year, lyrics, submitter_name, submitter_email, status, created_at) 
-         VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', datetime('now'))`
+         (title, artist, songNameSinhala, artistNameSinhala, album, year, lyrics, lyricContentSinhala, duration, composer, lyricist, submitter_name, submitter_email, status, created_at) 
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', datetime('now'))`
       )
       .bind(
         input.title,
         input.artist,
+        input.title_sinhala || null,
+        input.artist_sinhala || null,
         input.album || null,
         input.year || null,
         input.lyrics,
+        input.lyrics_sinhala || null,
+        input.duration || null,
+        input.composer || null,
+        input.lyricist || null,
         input.submitter_name || null,
         input.submitter_email || null
       )
@@ -29,9 +42,15 @@ export class SuggestionsService {
         id: suggestionId,
         title: input.title,
         artist: input.artist,
+        songNameSinhala: input.title_sinhala || null,
+        artistNameSinhala: input.artist_sinhala || null,
         album: input.album || null,
         year: input.year || null,
         lyrics: input.lyrics,
+        lyricContentSinhala: input.lyrics_sinhala || null,
+        duration: input.duration || null,
+        composer: input.composer || null,
+        lyricist: input.lyricist || null,
         submitter_name: input.submitter_name || null,
         submitter_email: input.submitter_email || null,
         status: 'pending',
@@ -43,7 +62,7 @@ export class SuggestionsService {
   async getSuggestionStatus(id: number): Promise<Suggestion | null> {
     const suggestion = await this.db
       .prepare(
-        `SELECT id, title, artist, status, created_at, reviewed_at 
+        `SELECT id, title, artist, songNameSinhala, artistNameSinhala, status, created_at, reviewed_at 
          FROM pending_suggestions 
          WHERE id = ?`
       )
@@ -56,8 +75,8 @@ export class SuggestionsService {
   async getAllSuggestions(status: string = 'pending'): Promise<Suggestion[]> {
     const { results } = await this.db
       .prepare(
-        `SELECT id, title, artist, album, year, lyrics, 
-                submitter_name, submitter_email, status, created_at, reviewed_at, rejection_reason 
+        `SELECT id, title, artist, songNameSinhala, artistNameSinhala, album, year, lyrics, lyricContentSinhala,
+                duration, composer, lyricist, submitter_name, submitter_email, status, created_at, reviewed_at, rejection_reason 
          FROM pending_suggestions 
          WHERE status = ?
          ORDER BY created_at DESC`

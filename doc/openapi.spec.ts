@@ -1165,6 +1165,16 @@ export const generateOpenAPISpec = () => {
               type: 'string', 
               example: 'Lyricist Name',
               description: 'Name of the lyricist (Optional)'
+            },
+            submitter_name: { 
+              type: 'string', 
+              example: 'Sample User',
+              description: 'Name of the person submitting the suggestion (Optional)'
+            },
+            submitter_email: { 
+              type: 'string', 
+              example: 'example@example.com',
+              description: 'Email of the person submitting the suggestion (Optional)'
             }
           }
         },

@@ -18,7 +18,7 @@ suggestionsRouter.get('/health', (c) => {
 suggestionsRouter.post('/', async (c) => {
   try {
     const body = await c.req.json<SuggestionCreateInput>();
-    const { title, artist, album, year, lyrics, submitter_name, submitter_email } = body;
+    const { title, artist, title_sinhala, artist_sinhala, album, year, lyrics, lyrics_sinhala, duration, composer, lyricist, submitter_name, submitter_email } = body;
 
     // Validation
     if (!title || !artist || !lyrics) {
@@ -50,15 +50,7 @@ suggestionsRouter.post('/', async (c) => {
     }
 
     const service = new SuggestionsService(c.env.sinso_api_db);
-    const result = await service.createSuggestion({
-      title,
-      artist,
-      album,
-      year,
-      lyrics,
-      submitter_name,
-      submitter_email
-    });
+    const result = await service.createSuggestion(body);
 
     return c.json(
       {
